@@ -1,10 +1,8 @@
 from typing import List
 
 from fastapi import APIRouter
-from sqlalchemy import select
 
-from src.database import session_maker
-from src.db_models.todo_list import TodoList
+from repository.todo_list import TodoListRepo
 from src.models.task import TaskRequest, TaskResponse
 from src.models.todo_list import TodoListRequest, TodoListResponse
 
@@ -16,40 +14,19 @@ lists = APIRouter(
 
 @lists.get("")
 async def get_lists() -> List[TodoListResponse]:
-    async with session_maker() as session:
-        query = select(TodoList)  # SELECT * FROM lists
-        result = await session.execute(query)
-        res = result.scalars().all()
-    return res
+    todo_lists = await TodoListRepo.get_all()
+    return todo_lists
 
 
 @lists.get("/{list_id}")
 async def get_list(list_id: int) -> TodoListResponse | None:
-    async with session_maker() as session:
-        # query = select(TodoList).where(TodoList.id == list_id)
-        # query = select(TodoList).filter(TodoList.id == list_id)
-        # query = select(TodoList).filter_by(id=list_id)
-        # result = await session.execute(query)
-        # res = result.scalars().one_or_none()
-
-        res = await session.get(TodoList, list_id)
+    res = await TodoListRepo.get_by_id(list_id)
     return res
 
 
 @lists.post("")
 async def create_list(todo_list: TodoListRequest) -> TodoListResponse:
-    async with session_maker() as session:
-        my_todo_list = TodoList(
-            title=todo_list.title,
-            description=todo_list.description,
-            user_id=todo_list.user_id,
-        )
-        session.add(my_todo_list)
-        await session.flush()  # expire и refresh
-        # session.add_all([my_todo_list, my_todo_list])
-        todo_list_id = my_todo_list.id
-        await session.commit()
-
+    todo_list_id = await TodoListRepo.create(todo_list.model_dump())
     return TodoListResponse(
         id=todo_list_id,
         title=todo_list.title,
@@ -60,12 +37,7 @@ async def create_list(todo_list: TodoListRequest) -> TodoListResponse:
 
 @lists.put("/{list_id}")
 async def update_list(list_id: int, todo_list: TodoListRequest) -> TodoListResponse:
-    async with session_maker() as session:
-        my_todo_list = await session.get(TodoList, list_id)
-        my_todo_list.title = todo_list.title
-        my_todo_list.description = todo_list.description
-        await session.commit()
-
+    await TodoListRepo.update(list_id, todo_list)
     return TodoListResponse(
         id=list_id,
         title=todo_list.title,
@@ -76,11 +48,7 @@ async def update_list(list_id: int, todo_list: TodoListRequest) -> TodoListRespo
 
 @lists.delete("/{list_id}")
 async def delete_list(list_id: int) -> int:
-    async with session_maker() as session:
-        my_todo_list = await session.get(TodoList, list_id)
-        await session.delete(my_todo_list)
-        await session.commit()
-
+    await TodoListRepo.delete(list_id)
     return list_id
 
 

@@ -7,8 +7,6 @@ from src.api_routers.auth import auth
 from src.api_routers.lists import lists
 from src.api_routers.tasks import tasks
 from src.database import Base, engine, session_maker
-from src.db_models.task import Task
-from src.db_models.todo_list import TodoList
 from src.db_models.user import User
 
 
