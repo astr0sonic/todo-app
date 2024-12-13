@@ -45,11 +45,13 @@ async def create_list(todo_list: TodoListRequest) -> TodoListResponse:
             user_id=todo_list.user_id,
         )
         session.add(my_todo_list)
+        await session.flush()  # expire и refresh
         # session.add_all([my_todo_list, my_todo_list])
+        todo_list_id = my_todo_list.id
         await session.commit()
 
     return TodoListResponse(
-        id=1,
+        id=todo_list_id,
         title=todo_list.title,
         description=todo_list.description,
         user_id=todo_list.user_id,
@@ -57,7 +59,13 @@ async def create_list(todo_list: TodoListRequest) -> TodoListResponse:
 
 
 @lists.put("/{list_id}")
-async def update_list(list_id: int, todo_list: TodoListRequest) -> str:
+async def update_list(list_id: int, todo_list: TodoListRequest) -> TodoListResponse:
+    async with session_maker() as session:
+        my_todo_list = await session.get(TodoList, list_id)
+        my_todo_list.title = todo_list.title
+        my_todo_list.description = todo_list.description
+        await session.commit()
+
     return TodoListResponse(
         id=list_id,
         title=todo_list.title,
@@ -67,13 +75,13 @@ async def update_list(list_id: int, todo_list: TodoListRequest) -> str:
 
 
 @lists.delete("/{list_id}")
-async def delete_list(list_id: int) -> TodoListResponse:
-    return TodoListResponse(
-        id=list_id,
-        title=f"My list {list_id}",
-        description="My description",
-        user_id=1,
-    )
+async def delete_list(list_id: int) -> int:
+    async with session_maker() as session:
+        my_todo_list = await session.get(TodoList, list_id)
+        await session.delete(my_todo_list)
+        await session.commit()
+
+    return list_id
 
 
 @lists.post("/{list_id}/tasks")
