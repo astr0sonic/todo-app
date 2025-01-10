@@ -15,4 +15,4 @@ class TodoList(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
     user: Mapped["User"] = relationship(back_populates="lists")
-    tasks: Mapped[List["Task"]] = relationship(back_populates="todo_list")
+    # tasks: Mapped[List["Task"]] = relationship(back_populates="todo_list")

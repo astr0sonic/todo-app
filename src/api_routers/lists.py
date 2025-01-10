@@ -1,8 +1,11 @@
+from datetime import datetime, timezone
 from typing import List
 
-from fastapi import APIRouter
+import jwt
+from fastapi import APIRouter, HTTPException, Request, Response, status
 
 from repository.todo_list import TodoListRepo
+from src.config import config
 from src.models.task import TaskRequest, TaskResponse
 from src.models.todo_list import TodoListRequest, TodoListResponse
 
@@ -13,9 +16,34 @@ lists = APIRouter(
 
 
 @lists.get("")
-async def get_lists() -> List[TodoListResponse]:
-    todo_lists = await TodoListRepo.get_all()
-    return todo_lists
+async def get_lists(request: Request, response: Response) -> List[TodoListResponse]:
+    encoded_jwt = request.cookies.get("access_token", "")
+    if encoded_jwt == "":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Firstly, you have to log in!",
+        )
+
+    try:
+        data: dict = jwt.decode(
+            jwt=encoded_jwt,
+            key=config.secret_key,
+            algorithms=[config.signature_algorithm],
+        )
+    except jwt.InvalidTokenError:
+        response.delete_cookie("access_token")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    user_id = int(data.get("sub"))
+
+    if user_id == 1:
+        todo_lists = await TodoListRepo.get_all()
+        return todo_lists
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have access!",
+        )
 
 
 @lists.get("/{list_id}")

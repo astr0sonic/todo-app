@@ -13,4 +13,4 @@ class Task(Base):
     done: Mapped[bool] = mapped_column(nullable=False)
     list_id: Mapped[int] = mapped_column(ForeignKey("lists.id"))
 
-    todo_list: Mapped["TodoList"] = relationship(back_populates="tasks")
+    # todo_list: Mapped["TodoList"] = relationship(back_populates="tasks")
