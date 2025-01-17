@@ -1,8 +1,14 @@
+import json
+from asyncio import sleep
 from datetime import datetime, timezone
 from typing import List
 
 import jwt
 from fastapi import APIRouter, HTTPException, Request, Response, status
+
+# import aioredis
+from fastapi_cache.decorator import cache
+from redis import Redis
 
 from repository.todo_list import TodoListRepo
 from src.config import config
@@ -13,6 +19,29 @@ lists = APIRouter(
     prefix="/lists",
     tags=["Todo lists processing"],
 )
+
+
+@lists.get("/test_redis")
+async def get_my_lists() -> List[str]:
+    r = Redis(host=config.redis_host, port=config.redis_port)
+    # r = aioredis.from_url(url=f"redis://{config.redis_host}:{config.redis_port}")
+    cached_my_data = r.get("cache:mydata")
+    if cached_my_data:
+        s = json.loads(cached_my_data)
+        return s
+
+    await sleep(5)
+    my_data = ["my_data_1", "my_data_2", "my_data_3"]
+    r.setex("cache:mydata", 10, json.dumps(my_data))
+    return my_data
+
+
+@lists.get("/test_redis2")
+@cache(expire=20)
+async def get_my_lists2() -> List[str]:
+    await sleep(5)
+    my_data = ["my_data_1", "my_data_2", "my_data_3"]
+    return my_data
 
 
 @lists.get("")

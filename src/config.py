@@ -11,6 +11,9 @@ class Config(BaseSettings):
     secret_key: str
     signature_algorithm: str
 
+    redis_host: str
+    redis_port: int
+
     @property
     def db_url(self) -> str:
         return f"postgresql+asyncpg://{self.db_username}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
