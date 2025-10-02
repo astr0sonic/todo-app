@@ -10,4 +10,4 @@ async def say_hello() -> str:
 
 
 if __name__ == "__main__":
-    uvicorn.run("src.main:app", reload=True)
+    uvicorn.run("main:app", reload=True)
