@@ -17,18 +17,38 @@ Start:
 Базовый функционал:
 
 * регистрация/авторизация;
+POST /auth/sign-up - регистрация
+POST /auth/sign-in - авторизация
 
 * работа со списками задач:
 
     * создание списка;
+    POST /lists
     * просмотр списков;
+    GET /lists
     * просмотр списка;
+    GET /lists/{id}
     * редактирование списка;
+    PUT /lists/{id}
     * удаление списка;
+    DELETE /lists/{id}
 
 * работа с задачи:
 
     * создание задачи;
+    POST /lists/{id}/tasks
+    * получение всех задач списка
+    GET /lists/{id}/tasks
+
     * просмотр задачи;
+    GET /lists/{id}/tasks/{task_id}
+    GET /tasks/{id}
     * редактирование задачи;
+    PUT /lists/{id}/tasks/{task_id}
+    PUT /tasks/{id}
     * удаление задач.
+    DELETE /lists/{id}/tasks/{task_id}
+    DELETE /tasks/{id}
+
+Схема хранения данных:
+
