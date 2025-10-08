@@ -51,4 +51,4 @@ POST /auth/sign-in - авторизация
     DELETE /tasks/{id}
 
 Схема хранения данных:
-
+https://miro.com/app/board/uXjVLEPaEcM=/?share_link_id=467286878499
