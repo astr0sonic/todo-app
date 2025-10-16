@@ -52,3 +52,8 @@ POST /auth/sign-in - авторизация
 
 Схема хранения данных:
 https://miro.com/app/board/uXjVLEPaEcM=/?share_link_id=467286878499
+
+Запуск БД в докер-контейнере
+```
+$ docker run --name db -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -d postgres
+```

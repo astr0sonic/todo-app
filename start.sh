@@ -4,4 +4,4 @@ set -e
 
 source .venv/bin/activate
 export PYTHONPATH="$(PWD)"
-python src/main.py
+python src/db_models/tables.py
