@@ -59,4 +59,4 @@ async def create_tables() -> None:
         await conn.run_sync(metadata.create_all)
 
 
-asyncio.run(create_tables())
+# asyncio.run(create_tables())

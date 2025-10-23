@@ -31,3 +31,7 @@ asyncio.run(connect_db())
 
 class Base(DeclarativeBase):
     pass
+
+
+db_url = settings.db_url
+engine = create_async_engine(url=db_url)
