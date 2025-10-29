@@ -1,8 +1,8 @@
 import asyncio
 
 from sqlalchemy import create_engine, text
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from src.config import settings
 
@@ -35,3 +35,8 @@ class Base(DeclarativeBase):
 
 db_url = settings.db_url
 engine = create_async_engine(url=db_url)
+session_maker = async_sessionmaker(engine)
+
+sync_db_url = settings.sync_db_url
+sync_engine = create_engine(url=sync_db_url)
+sync_session_maker = sessionmaker(sync_engine)
