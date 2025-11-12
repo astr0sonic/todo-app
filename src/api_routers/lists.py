@@ -1,5 +1,7 @@
 from fastapi import APIRouter
 
+from src.database import session_maker
+from src.db_models.todo_list import TodoList
 from src.models.task import TaskRequest, TaskResponse
 from src.models.todo_list import TodoListRequest, TodoListResponse
 
@@ -24,9 +26,15 @@ async def get_lists() -> list[TodoListResponse]:
 
 @lists_router.get("/{list_id}")
 async def get_list(list_id: int) -> TodoListResponse:
+    # repo = Repository()
+    # todo_list = await repo.get_todo_list(list_id=1)
+    async with session_maker() as session:
+        todo_list = await session.get(TodoList, list_id)
+    # TODO: model_validate - different attribute names
+    # todo_list_response = TodoListResponse.model_validate(todo_list, from_attributes=True)
     return TodoListResponse(
-        list_id=list_id,
-        title="My title",
+        list_id=todo_list.id,
+        title=todo_list.description,
     )
 
 

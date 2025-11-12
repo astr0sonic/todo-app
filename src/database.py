@@ -30,13 +30,17 @@ asyncio.run(connect_db())
 
 
 class Base(DeclarativeBase):
-    pass
+    def __repr__(self) -> str:
+        res = ""
+        for col in self.__table__.columns.keys():
+            res += f"{col}={getattr(self, col)} "
+        return res
 
 
 db_url = settings.db_url
-engine = create_async_engine(url=db_url)
+engine = create_async_engine(url=db_url, echo=True)
 session_maker = async_sessionmaker(engine)
 
 sync_db_url = settings.sync_db_url
-sync_engine = create_engine(url=sync_db_url)
+sync_engine = create_engine(url=sync_db_url, echo=True)
 sync_session_maker = sessionmaker(sync_engine)

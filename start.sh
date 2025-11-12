@@ -4,4 +4,4 @@ set -e
 
 source .venv/bin/activate
 export PYTHONPATH="$(PWD)"
-python src/db_examples_orm.py
+python src/main.py

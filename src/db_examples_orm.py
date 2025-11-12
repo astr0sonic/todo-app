@@ -6,7 +6,10 @@ from sqlalchemy.orm import Session
 
 from src.config import settings
 from src.database import engine, session_maker, sync_session_maker
+from src.db_models.task import Task
+from src.db_models.todo_list import TodoList
 from src.db_models.user import User
+from src.models import todo_list
 
 db_url = settings.sync_db_url
 sync_engine = create_engine(url=db_url)
@@ -30,9 +33,25 @@ async def insert_data_into_users():
     #     session.add(user)
     #     await session.commit()
     async with session_maker() as session:
-        user = User(username="123", password="123")
-        session.add(user)
-        await session.commit()
+        # user = User(username="asd", password="asd")
+        # session.add(user)
+        # print(user.id)
+        # await session.flush()
+        # print(user.id)
+        # await asyncio.sleep(30)
+        # await session.commit()
+
+        # user = User(username="5556", password="6666")
+        # session.add(user)
+        # # TODO: expire_all
+        # session.expire_all()
+        # await session.commit()
+
+        user = await session.get(User, 12)
+        print(user)
+        await asyncio.sleep(30)
+        await session.refresh(user)
+        print(user.username)
 
 
 # SELECT * FROM users WHERE id=1
@@ -92,6 +111,43 @@ async def update_data_in_users():
         await session.commit()
 
 
-# update_data_in_users_sync()
+# DELETE FROM users WHERE id = 4
+def delete_data_in_users_sync():
+    with sync_session_maker() as session:
+        user = session.get(User, 5)
+        session.delete(user)
+        session.commit()
 
-asyncio.run(update_data_in_users())
+
+async def delete_data_in_users():
+    async with session_maker() as session:
+        user = await session.get(User, 6)
+        await session.delete(user)
+        await session.commit()
+
+
+async def insert_data():
+    async with session_maker() as session:
+        todo_list = await session.get(TodoList, 1)
+        task1 = Task(title="Task1", description="d1", done=False, list_id=todo_list.id)
+        task2 = Task(title="Task2", description="d2", done=False, list_id=todo_list.id)
+        task3 = Task(title="Task3", description="d3", done=False, list_id=todo_list.id)
+        session.add_all([task1, task2, task3])
+        await session.commit()
+
+
+def get_todo_list_sync():
+    with sync_session_maker() as session:
+        todo_list = session.get(TodoList, 1)
+        print(todo_list.tasks)
+
+
+async def get_todo_list():
+    async with session_maker() as session:
+        todo_list = await session.get(TodoList, 1)
+        print(todo_list.tasks)
+
+
+# delete_data_in_users_sync()
+
+asyncio.run(delete_data_in_users())
