@@ -1,0 +1,44 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "simple": {
+            "format": "%(name)s - %(message)s"
+        },
+        "complex": {
+            "format": "[%(asctime)s] %(levelname)s %(name)s %(lineno)d - [%(message)s]"
+        },
+        "my_formatter": {
+            "()": "log_example.formatters.MyFormatter"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "stream": "ext://sys.stdout",
+            "formatter": "my_formatter"
+        },
+        "file_handler": {
+            "class": "logging.FileHandler",
+            "level": "WARNING",
+            "filename": "logs.log",
+            "formatter": "complex"
+        },
+        "tg_handler": {
+            "()": "log_example.handlers.TelegramHandler",
+            "formatter": "simple",
+            "level": "WARNING"
+        }
+    },
+    "loggers": {
+        "root": {
+            "level": "DEBUG",
+            "handlers": ["console", "file_handler", "tg_handler"]
+        },
+        "my_logger": {
+            "level": "DEBUG",
+            "progate": "true"
+        }
+    }
+}
