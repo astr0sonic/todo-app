@@ -1,9 +1,10 @@
+from typing import Optional
+
 from fastapi import APIRouter
 
-from src.database import session_maker
-from src.db_models.todo_list import TodoList
 from src.models.task import TaskRequest, TaskResponse
 from src.models.todo_list import TodoListRequest, TodoListResponse
+from src.repository.todo_list import Repository
 
 lists_router = APIRouter(prefix="/lists", tags=["Processing todo lists"])
 
@@ -25,17 +26,20 @@ async def get_lists() -> list[TodoListResponse]:
 
 
 @lists_router.get("/{list_id}")
-async def get_list(list_id: int) -> TodoListResponse:
-    # repo = Repository()
-    # todo_list = await repo.get_todo_list(list_id=1)
-    async with session_maker() as session:
-        todo_list = await session.get(TodoList, list_id)
+async def get_list(list_id: int) -> Optional[TodoListResponse]:
+    # async with session_maker() as session:
+    #     todo_list = await session.get(TodoList, list_id)
     # TODO: model_validate - different attribute names
     # todo_list_response = TodoListResponse.model_validate(todo_list, from_attributes=True)
-    return TodoListResponse(
-        list_id=todo_list.id,
-        title=todo_list.description,
-    )
+
+    todo_list_repo = Repository()
+    todo_list = await todo_list_repo.get_by_id(list_id)
+    if todo_list is not None:
+        return TodoListResponse(
+            list_id=todo_list.id,
+            title=todo_list.description,
+        )
+    return None
 
 
 @lists_router.put("/{list_id}")
@@ -47,11 +51,10 @@ async def update_list(list_id: int, todo_list: TodoListRequest) -> TodoListRespo
 
 
 @lists_router.delete("/{list_id}")
-async def delete_list(list_id: int) -> TodoListResponse:
-    return TodoListResponse(
-        list_id=list_id,
-        title="My title",
-    )
+async def delete_list(list_id: int) -> int:
+    repo = Repository()
+    await repo.delete(list_id)
+    return list_id
 
 
 @lists_router.post("/{list_id}/tasks")
