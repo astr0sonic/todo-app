@@ -20,4 +20,4 @@ app.include_router(tasks_router)
 app.include_router(other_router)
 
 if __name__ == "__main__":
-    uvicorn.run("src.main:app", reload=True, port=8003)
+    uvicorn.run("src.main:app", reload=True, port=8000)
