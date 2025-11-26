@@ -1,12 +1,37 @@
+import json
+from asyncio import sleep as async_sleep
+from time import sleep
 from typing import Optional
 
 from fastapi import APIRouter
+from fastapi_cache.decorator import cache
 
+from src.cache_utils import get_cache, set_cachekey
 from src.models.task import TaskRequest, TaskResponse
 from src.models.todo_list import TodoListRequest, TodoListResponse
 from src.repository.todo_list import Repository
 
 lists_router = APIRouter(prefix="/lists", tags=["Processing todo lists"])
+
+
+@lists_router.get("/test_redis")
+def test_redis() -> list[str]:
+    if get_cache("mydata"):
+        res = get_cache("mydata")
+        res = json.loads(res)
+        return res
+    mydata = ["one", "two", "three"]
+    set_cachekey("mydata", json.dumps(mydata))
+    sleep(3)
+    return mydata
+
+
+@lists_router.get("/test_redis2")
+@cache(expire=20)
+async def test_redis2() -> list[str]:
+    mydata = ["one", "two", "three"]
+    await async_sleep(3)
+    return mydata
 
 
 @lists_router.post("")
