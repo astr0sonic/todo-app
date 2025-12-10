@@ -3,5 +3,5 @@
 set -e
 
 source .venv/bin/activate
-export PYTHONPATH="$(PWD)"
+export PYTHONPATH="$(pwd)"
 python src/main.py
