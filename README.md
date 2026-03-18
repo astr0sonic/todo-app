@@ -49,3 +49,9 @@ GET /tasks/{id} - получение задачи
 PUT /tasks/{id} - редактирование задачи
 DELETE /tasks/{id} - удаление задачи
 ```
+
+Чтобы поднять Postgres в докер-контейнере:
+
+```bash
+docker run --name db -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
+```

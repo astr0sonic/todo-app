@@ -1,9 +1,16 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 
+from src.api_routers.auth import auth_router
+from src.api_routers.task import task_router
+from src.api_routers.todo_list import todo_list_router
 from src.config import config
 
 app = FastAPI()
+
+app.include_router(auth_router)
+app.include_router(todo_list_router)
+app.include_router(task_router)
 
 
 @app.get("/hello")
