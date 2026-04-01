@@ -1,3 +1,6 @@
+from contextlib import asynccontextmanager
+from venv import create
+
 import uvicorn
 from fastapi import APIRouter, FastAPI
 
@@ -5,8 +8,16 @@ from src.api_routers.auth import auth_router
 from src.api_routers.task import task_router
 from src.api_routers.todo_list import todo_list_router
 from src.config import config
+from src.db_models.tables import async_create_tables, create_tables
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await async_create_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(auth_router)
 app.include_router(todo_list_router)
