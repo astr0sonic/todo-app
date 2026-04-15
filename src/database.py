@@ -1,11 +1,21 @@
-from sqlalchemy import create_engine, text
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy import MetaData, create_engine, text
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from src.config import config
+
+metadata = MetaData()
 
 
 class Base(DeclarativeBase):
     pass
+
+
+sync_engine = create_engine(config.sync_db_url)
+sync_session_maker = sessionmaker(bind=sync_engine)
+
+engine = create_async_engine(config.db_url)
+session_maker = async_sessionmaker(bind=engine)
 
 
 def connect_db() -> None:

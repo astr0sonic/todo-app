@@ -8,12 +8,18 @@ from src.api_routers.auth import auth_router
 from src.api_routers.task import task_router
 from src.api_routers.todo_list import todo_list_router
 from src.config import config
-from src.db_models.tables import async_create_tables, create_tables
+from src.db_models.create_tables import (
+    async_create_tables,
+    create_tables,
+    create_tables_core,
+)
+from src.operate_db.insert import insert_sync
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await async_create_tables()
+    # await async_create_tables()
+    insert_sync()
     yield
 
 

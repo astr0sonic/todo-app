@@ -4,14 +4,14 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.database import Base
 
 
-class Task(Base):
-    __tablename__ = "tasks"
+class TodoList(Base):
+    __tablename__ = "lists"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255))
-    # description: Mapped[str] = mapped_column(String())
     description: Mapped[str]
     done: Mapped[bool] = mapped_column(default=False)
-    list_id: Mapped[int] = mapped_column(ForeignKey("lists.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
-    todo_list: Mapped["TodoList"] = relationship(back_populates="tasks")
+    user: Mapped["User"] = relationship(back_populates="lists")
+    tasks: Mapped[list["Task"]] = relationship(back_populates="todo_list")
