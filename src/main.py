@@ -13,13 +13,21 @@ from src.db_models.create_tables import (
     create_tables,
     create_tables_core,
 )
-from src.operate_db.insert import insert_sync
+from src.operate_db.delete import delete_core, delete_core_sync, delete_sync
+from src.operate_db.insert import (
+    insert_core,
+    insert_sync,
+    insert_sync_safe,
+    insert_users_sync,
+)
+from src.operate_db.select import select_core, select_core_sync, select_sync
+from src.operate_db.update import update_core, update_core_sync, update_sync
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # await async_create_tables()
-    insert_sync()
+    await delete_core()
     yield
 
 
