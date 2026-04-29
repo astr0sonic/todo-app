@@ -11,10 +11,10 @@ class Base(DeclarativeBase):
     pass
 
 
-sync_engine = create_engine(config.sync_db_url)
+sync_engine = create_engine(config.sync_db_url, echo=True)
 sync_session_maker = sessionmaker(bind=sync_engine)
 
-engine = create_async_engine(config.db_url)
+engine = create_async_engine(config.db_url, echo=True)
 session_maker = async_sessionmaker(bind=engine)
 
 

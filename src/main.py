@@ -20,14 +20,26 @@ from src.operate_db.insert import (
     insert_sync_safe,
     insert_users_sync,
 )
+from src.operate_db.insert_orm import insert, insert_all, insert_flush_sync, insert_sync
 from src.operate_db.select import select_core, select_core_sync, select_sync
+from src.operate_db.select_orm import (
+    select_complex_orm,
+    select_complex_orm_sync,
+    select_orm,
+    select_orm_sync,
+)
 from src.operate_db.update import update_core, update_core_sync, update_sync
+from src.operate_db.update_orm import (
+    update_orm,
+    update_orm_refresh_sync,
+    update_orm_sync,
+)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # await async_create_tables()
-    await delete_core()
+    insert_flush_sync()
     yield
 
 
