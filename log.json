@@ -1,0 +1,24 @@
+{
+    "version": 1,
+    "handlers": {
+        "stream": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "format": "%(name)s - %(pathname)s - %(message)s"
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "log.log",
+            "format": "%(name)s - %(funcName)s - %(message)s"
+        }
+    },
+    "loggers": {
+        "root": {
+            "level": "DEBUG",
+            "handlers": ["stream", "file"]
+        },
+        "app": {
+            "level": "DEBUG"
+        }
+    }
+}

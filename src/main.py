@@ -1,5 +1,8 @@
+import json
+import logging
+import logging.config
+import sys
 from contextlib import asynccontextmanager
-from venv import create
 
 import uvicorn
 from fastapi import APIRouter, FastAPI
@@ -65,5 +68,52 @@ def handle_my_data(a: int, b: str, my_id: int) -> str:
     return f"{a=}, {b=}, {my_id=}!"
 
 
+def configure_logging() -> None:
+    with open("log.json", "r") as f:
+        log_config = json.load(f)
+    logging.config.dictConfig(log_config)
+
+
 if __name__ == "__main__":
-    uvicorn.run("src.main:app", port=config.port, reload=True)
+    logging.basicConfig(
+        level=logging.ERROR,
+        format="%(asctime)s @-@ %(lineno)s @-@ %(levelname)s --- msg: %(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%S",
+    )
+
+    logger = logging.getLogger("app")
+    # logger.propagate = False
+    # logger2 = logging.getLogger("app.app1")
+    # logger2 -> logger -> root - log propagation
+    # logger2.propagate = False
+    # logger2.debug("debug")
+
+    logger.setLevel(logging.DEBUG)
+    stream_formatter = logging.Formatter(fmt="%(name)s - %(pathname)s - %(message)s")
+    file_formatter = logging.Formatter(fmt="%(name)s - %(funcName)s - %(message)s")
+
+    stream_handler = logging.StreamHandler(stream=sys.stdout)
+    stream_handler.setLevel(logging.DEBUG)
+    stream_handler.setFormatter(stream_formatter)
+
+    file_handler = logging.FileHandler(filename="log.log")
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(file_formatter)
+    logger.addHandler(stream_handler)
+    logger.addHandler(file_handler)
+
+    logger.debug("debug")
+    logger.info("info")
+
+    # logging.debug("debug")
+    # logging.info("info")
+    # logging.warning("warning")
+    # logging.error("error")
+    # logging.critical("critical")
+    # logging.exception("exception")
+
+    # logger handler formatter filter
+    # DEBUG INFO WARNING ERROR CRITICAL
+    # uvicorn.run("src.main:app", port=config.port, reload=True)
+
+    # custom handler, QueueHandler
